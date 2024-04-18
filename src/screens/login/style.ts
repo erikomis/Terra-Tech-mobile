@@ -10,6 +10,7 @@ export const ContainerHeader = styled(Animated.View)`
   height: 30%;
   width: 100%;
   background-color: #28502e;
+  align-items: center;
 `;
 export const FormContainer = styled(Animated.View)`
   flex: 1;
@@ -28,11 +29,10 @@ export const Title = styled.Text`
 
 export const SubTitle = styled.Text`
   font-size: 20px;
-`
+`;
 
 export const ButtonTextUrderline = styled.Text`
   color: #28502e;
   font-weight: bold;
   text-decoration: underline;
-
-`
+`;
