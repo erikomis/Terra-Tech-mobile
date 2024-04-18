@@ -1,11 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useState } from "react";
 import { authService } from "../service/auth.service";
+import { HttpCode } from "../service/httpCode";
 
 export const AuthContext = createContext({} as AuthContextData);
 
 interface AuthContextData {
   user: User | undefined;
+  verifyToken: string;
+  addToken: (token: string) => void;
+  clearVerifyToken: () => void;
   signIn: (
     credentials: SignInCredentials
   ) => Promise<{ mensagem: string } | void>;
@@ -29,6 +33,7 @@ interface SignInCredentials {
 }
 interface RegisterCredentials {
   name: string;
+  lastName: string;
   email: string;
   password: string;
 }
@@ -39,8 +44,15 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User>();
+  const [verifyToken, setVerifyToken] = useState("");
   const [loading, setLoading] = useState(false);
+  const clearVerifyToken = () => {
+    setVerifyToken("");
+  };
 
+  const addToken = (token: string) => {
+    setVerifyToken(token);
+  };
   useEffect(() => {
     async function loadStorageData() {
       setLoading(true);
@@ -56,39 +68,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signIn({ email, password }: SignInCredentials) {
     // try {
-      const response = await authService.login(email, password);
+    const response = await authService.login(email, password);
+    if (response.status !== HttpCode.OK) {
       console.log(response);
+      return {
+        mensagem: "Email ou senha invalidos",
+      };
+    }
+    await AsyncStorage.setItem(
+      "@rn:auth:user",
+      JSON.stringify({
+        user: response.data.user,
+        token: response.data.token,
+      })
+    );
 
-      if (response.status !== 200) {
-        return {
-          mensagem: "Email ou senha invalidos",
-        };
-      }
-      await AsyncStorage.setItem(
-        "@rn:auth:user",
-        JSON.stringify({
-          user: response.data.user,
-          token: response.data.token,
-        })
-      );
-
-      setUser(response.data.user);
-  
+    setUser(response.data.user);
   }
 
-  async function register({ name, email, password }: RegisterCredentials) {
-    const nameCompleto = name.split(" ");
-    const lastName = nameCompleto[nameCompleto.length - 1];
-    const firstName = nameCompleto.slice(0, nameCompleto.length - 1).join(" ");
-
+  async function register({
+    name,
+    lastName,
+    email,
+    password,
+  }: RegisterCredentials) {
     const response = await authService.register(
-      firstName,
+      name,
       lastName,
       email,
       password
     );
 
-    if (response.status !== 200) {
+    if (response.status !== HttpCode.CREATED) {
       return {
         mensagem: "Email ou senha invalidos",
       };
@@ -120,7 +131,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, register, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        signIn,
+        signOut,
+        register,
+        loading,
+        clearVerifyToken,
+        verifyToken,
+        addToken
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
