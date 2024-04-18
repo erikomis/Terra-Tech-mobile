@@ -5,7 +5,6 @@ interface IReqErrorResponse {
   message?: string;
 }
 
-
 export const api = axios.create({
   baseURL: "https://projetos-web.com/",
   headers: {
@@ -57,3 +56,17 @@ api.interceptors.response.use(
     return responseErrorModel;
   }
 );
+
+export const AdapterHttp = {
+  request: async (url: string, method: string, data?: any) => {
+    const response = await api({
+      url,
+      method,
+      data,
+    });
+    return response;
+  },
+  clearToken: () => {
+    api.defaults.headers.common["Authorization"] = "";
+  },
+};
