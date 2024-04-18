@@ -1,6 +1,3 @@
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { InputBase } from "../../components/InputBase/InputBase";
 import { InputPasswordBase } from "../../components/InputBase/InputPasswordBase";
 import { Button } from "../../components/button/Button";
@@ -15,56 +12,24 @@ import {
   FormContainer,
   Title,
 } from "./styles";
-import { useContextAuth } from "../../context/Auth.context";
-import { useState } from "react";
-type FormData = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-const schema = yup.object().shape({
-  name: yup
-    .string()
-    .required("Nome é obrigatorio")
-    .min(6, "Nome deve ter no minimo 6 caracteres"),
-  email: yup.string().required("Email é obrigatorio").email("Email invalido"),
-  password: yup
-    .string()
-    .required("Senha é obrigatorio")
-    .min(6, "Senha deve ter no minimo 6 caracteres")
-    .max(12, "Senha deve ter no maximo 12 caracteres"),
-
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("password")], "As senhas devem corresponder"),
-});
+import { useFormRegister } from "./useFormRegister";
+import { View } from "react-native-animatable";
+import Logo from "../../assets/images/logo.svg";
 export const Register = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const [errorMensage, setErrorMensage] = useState<string>("");
-  const { register } = useContextAuth();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
-  });
-  const onSubmit = async (data: FormData) => {
-    const response = await register(data);
-    if (response) {
-      setErrorMensage(response.mensagem);
-    }
-  };
-
+  const { control, errorMensage, errors, handleSubmit, onSubmit } =
+    useFormRegister();
   return (
     <Container>
-      <ContainerHeader animation="fadeIn" delay={500}></ContainerHeader>
+      <ContainerHeader animation="fadeIn" delay={500}>
+        <View
+          style={{
+            marginTop: -22,
+          }}
+        >
+          <Logo width={400} height={200} />
+        </View>
+      </ContainerHeader>
 
       <FormContainer animation="fadeInUp" delay={500}>
         <ScrollView
@@ -87,6 +52,12 @@ export const Register = () => {
             errors={errors}
             name="name"
             placeholder="Nome"
+          />
+          <InputBase
+            control={control}
+            errors={errors}
+            name="lastName"
+            placeholder="Sobrenome"
           />
           <InputBase
             control={control}
