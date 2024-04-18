@@ -3,8 +3,8 @@ import { Button } from "../../components/button/Button";
 import { Container } from "../login/style";
 import { ContainerForm, Title, Text, ContainerLogo } from "./styles";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-
+import { View } from "react-native";
+import Logo from "../../assets/images/logo.svg";
 export const Welcome = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   return (
@@ -12,7 +12,15 @@ export const Welcome = () => {
       <ContainerLogo
         delay={500}
         animation={"flipInY"}
-      ></ContainerLogo>
+      >
+         <View
+          style={{
+            marginTop: -100,
+          }}
+        >
+          <Logo width={500} height={700}  />
+        </View>
+      </ContainerLogo>
       <ContainerForm delay={1000}
         animation={"fadeInUp"}
       >
