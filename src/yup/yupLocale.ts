@@ -1,10 +1,10 @@
-import * as yup  from "yup";
-
+import * as yup from "yup";
 
 yup.setLocale({
   mixed: {
     required: "O campo é obrigatório",
     default: "Campo inválido",
+    notType: "Campo inválido",
   },
   string: {
     email: "Email inválido",
