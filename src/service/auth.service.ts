@@ -6,7 +6,7 @@ export const authService = {
       email,
       password,
     });
-
+    await AdapterHttp.setToken(response.data.token);
     return response;
   },
   async register(
