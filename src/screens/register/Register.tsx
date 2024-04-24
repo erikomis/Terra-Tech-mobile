@@ -42,7 +42,7 @@ export const Register = () => {
           }}
         >
           <Title>Criar Conta</Title>
-          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <ButtonTextUrderline>
               Já registrado? acesse Aqui
             </ButtonTextUrderline>
@@ -81,7 +81,7 @@ export const Register = () => {
           />
           <Button
             onPress={handleSubmit(onSubmit)}
-            title="Login"
+            title="Criar Conta"
             IsBoxContainer
           />
           {errorMensage && <ErrorText>{errorMensage}</ErrorText>}
