@@ -17,8 +17,8 @@ import { ErrorText } from "../../components/errorText/errorText";
 
 import Logo from "../../assets/images/logo.svg";
 
-
 export const ForgotPassword = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { control, errors, errorMensage, handleSubmit, onSubmit } =
     useFormForgotPassword();
   return (
@@ -46,7 +46,7 @@ export const ForgotPassword = () => {
           title="Recuperar senha"
         />
         {errorMensage && <ErrorText>{errorMensage}</ErrorText>}
-        <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <ButtonTextUrderline>Voltar para o login</ButtonTextUrderline>
         </TouchableOpacity>
       </ContainerForm>
