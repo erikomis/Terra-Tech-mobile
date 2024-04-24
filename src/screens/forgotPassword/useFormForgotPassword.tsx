@@ -27,7 +27,7 @@ export const useFormForgotPassword = () => {
   const onSubmit = async (data: FormData) => {
     const response = await authService.forgotPassword(data.email);
     if (response.status !== HttpCode.OK) {
-      console.log(response);
+
       setErrorMensage("email não encontrado ou inválido");
       return;
     }
