@@ -5,7 +5,7 @@ export const Container = styled.View`
   flex: 1;
 `;
 export const ContainerLogo = styled(Animated.View)`
-  flex: 2;
+  flex: 1;
   background-color: #28502e;
   justify-content: center;
   align-items: center;

@@ -22,12 +22,11 @@ export const Register = () => {
   return (
     <Container>
       <ContainerHeader animation="fadeIn" delay={500}>
-        <View
-          style={{
-            marginTop: -22,
-          }}
-        >
-          <Logo width={400} height={200} />
+        <View style={{
+          marginTop: -80,
+        
+        }}>
+          <Logo width={500} height={500} />
         </View>
       </ContainerHeader>
 

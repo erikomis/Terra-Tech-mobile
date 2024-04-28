@@ -26,7 +26,7 @@ export const ResetPassword = () => {
       <ContainerLogo delay={500} animation={"flipInY"}>
         <View
           style={{
-            marginTop: -80,
+            marginTop: -5,
           }}
         >
           <Logo width={500} height={500} />

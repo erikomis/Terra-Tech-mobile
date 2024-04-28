@@ -7,8 +7,8 @@ export const Container = styled.SafeAreaView`
 `;
 
 export const ContainerHeader = styled(Animated.View)`
-  height: 30%;
-  width: 100%;
+  /* height: 30%; */
+  flex: 1;
   background-color: #28502e;
   align-items: center;
 `;
@@ -35,4 +35,5 @@ export const ButtonTextUrderline = styled.Text`
   color: #28502e;
   font-weight: bold;
   text-decoration: underline;
+  margin-top: 10px;
 `;

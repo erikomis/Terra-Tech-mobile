@@ -25,9 +25,6 @@ export const ForgotPassword = () => {
     <Container>
       <ContainerLogo delay={500} animation={"flipInY"}>
         <View
-          style={{
-            marginTop: -80,
-          }}
         >
           <Logo width={500} height={700} />
         </View>
