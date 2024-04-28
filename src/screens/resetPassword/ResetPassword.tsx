@@ -12,16 +12,15 @@ import {
   Title,
 } from "./style";
 import { InputPasswordBase } from "../../components/InputBase/InputPasswordBase";
-import { useFormForgotPassword } from "../forgotPassword/useFormForgotPassword";
 import { View } from "react-native-animatable";
 import Logo from "../../assets/images/logo.svg";
+import { useResetPassword } from "./useResetPassword";
 
 
 export const ResetPassword = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
-  const { control, errors, handleSubmit, onSubmit } = useFormForgotPassword();
-  
+  const { control, errors, handleSubmit, onSubmit } = useResetPassword();
   return (
     <Container>
       <ContainerLogo delay={500} animation={"flipInY"}>

@@ -32,7 +32,7 @@ export const useResetPassword = () => {
     
     const response = await authService.resetPassword(data.password, verifyToken);
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       setErrorMensage(response.data.message);
       return;
     }
