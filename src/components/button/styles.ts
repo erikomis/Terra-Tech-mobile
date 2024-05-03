@@ -18,7 +18,7 @@ export const BoxButton = styled.View`
 `;
 export const Text = styled.Text<{ size?: string; colorType?: boolean }>`
   font-size: ${({ size }) => size || "24px"};
-  color: ${({ colorType }) => (colorType ? "red" : "#000")};
+  color: ${({ colorType }) => (colorType ? "red" : "white")};
   text-align: center;
   padding: 6px;
 `;
