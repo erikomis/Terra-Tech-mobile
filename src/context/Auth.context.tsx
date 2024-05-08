@@ -81,7 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         mensagem: "Email ou senha invalidos",
       };
     }
-    await authService.verifyToken(response.data.token);
+
     await AsyncStorage.setItem(
       "@rn:auth:user",
       JSON.stringify({
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     setUser({
       id: response.data.user.id,
-      name: response.data.user.name,
+      name: response.data.user.first_name + " " + response.data.user.last_name,
       email: response.data.user.email,
       token: response.data.token,
     });
