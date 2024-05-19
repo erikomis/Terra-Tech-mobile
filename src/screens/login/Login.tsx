@@ -10,16 +10,16 @@ import {
   Container,
   ContainerHeader,
   FormContainer,
-  SubTitle,
   Title,
 } from "./style";
 import Logo from "../../assets/images/logo.svg";
 import { ErrorText } from "../../components/errorText/errorText";
 import { useFormLogin } from "./useFormLogin";
+import { useContextAuth } from "../../context/Auth.context";
 
 export const Login = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-
+  const { loading } = useContextAuth();
   const { control, handleSubmit, errors, onSubmit, errorMensage } =
     useFormLogin();
   return (
@@ -45,8 +45,8 @@ export const Login = () => {
           }}
         >
           <Title>Login</Title>
-          <SubTitle>Faça o login para continuar </SubTitle>
           <InputBase
+            autocomplete="email"
             control={control}
             errors={errors}
             name="email"
@@ -59,12 +59,14 @@ export const Login = () => {
             name="password"
             placeholder={"Senha"}
           />
+          {errorMensage && <ErrorText>{errorMensage}</ErrorText>}
           <Button
             onPress={handleSubmit(onSubmit)}
             title="Acessar"
             IsBoxContainer
+            disabled={loading}
           />
-          {errorMensage && <ErrorText>{errorMensage}</ErrorText>}
+
           <TouchableOpacity
             onPress={() => navigation.navigate("ForgotPassword")}
           >
