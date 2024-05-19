@@ -35,5 +35,5 @@ export const ButtonTextUrderline = styled.Text`
   color: #28502e;
   font-weight: bold;
   text-decoration: underline;
-  margin-top: 10px;
+  margin-top: 6px;
 `;

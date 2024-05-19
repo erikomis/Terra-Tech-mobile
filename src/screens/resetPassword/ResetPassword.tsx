@@ -15,10 +15,11 @@ import { InputPasswordBase } from "../../components/InputBase/InputPasswordBase"
 import { View } from "react-native-animatable";
 import Logo from "../../assets/images/logo.svg";
 import { useResetPassword } from "./useResetPassword";
-
+import { useContextAuth } from "../../context/Auth.context";
 
 export const ResetPassword = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const { loading } = useContextAuth();
 
   const { control, errors, handleSubmit, onSubmit } = useResetPassword();
   return (
@@ -48,6 +49,7 @@ export const ResetPassword = () => {
           placeholder={"Confirmar Senha"}
         />
         <Button
+          disabled={loading}
           IsBoxContainer
           onPress={handleSubmit(onSubmit)}
           title="Criar nova senha"

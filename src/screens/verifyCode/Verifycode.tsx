@@ -12,11 +12,13 @@ import {
 } from "./style";
 import { useFormVerifyCode } from "./useFormVerifyCode";
 import Logo from "../../assets/images/logo.svg";
+import { useContextAuth } from "../../context/Auth.context";
 
 export const VerifyCode = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { control, errorMensage, errors, onSubmit, handleSubmit } =
     useFormVerifyCode();
+    const { loading } = useContextAuth();
   return (
     <Container>
       <ContainerLogo delay={500} animation={"flipInY"}>
@@ -37,6 +39,7 @@ export const VerifyCode = () => {
           placeholder="Código"
         />
         <Button
+          disabled={loading}
           IsBoxContainer
           onPress={handleSubmit(onSubmit)}
           title="Acessar"

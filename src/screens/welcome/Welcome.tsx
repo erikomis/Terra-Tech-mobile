@@ -27,7 +27,7 @@ export const Welcome = () => {
         <Title>Faça Analise usando imagem da Folhas de café</Title>
         <Text>Faca o login para comecar</Text>
 
-        <Button onPress={() => navigation.navigate("Login")} title="Acessar" />
+        <Button onPress={() => navigation.navigate("Login")} title="Acessar" disabled={false} />
         </ContainerForm>
     </Container>
   );
