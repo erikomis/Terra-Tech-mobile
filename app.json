@@ -20,10 +20,10 @@
         }
       ]
     ],
-    "icon": "./assets/icon.png",
+    "icon": "./assets/play_store_512.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/play_store_512.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
