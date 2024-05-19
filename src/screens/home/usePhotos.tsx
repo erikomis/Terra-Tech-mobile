@@ -1,70 +1,162 @@
-import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useContextAuth } from "../../context/Auth.context";
-import { useState } from "react";
-import { photosService } from "../../service/photos.service";
+import { useEffect, useRef, useState } from "react";
+import { Alert } from "react-native";
 import { HttpCode } from "../../service/httpCode";
-export const usePhotos = () => {
-  const { user, signOut } = useContextAuth();
-  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const [analyse, setAnalyse] = useState<
-    {
-      id: string;
-      image: string;
-      there_disease: boolean;
-      created_at: string;
-    }[]
-  >([]);
+import { photosService } from "../../service/photos.service";
+import {
+  MoveImageAsync,
+  PickImageAsync,
+  PickImageGalleryAsync,
+} from "../../utils/system";
+type paginationType = {
+  next: string | null;
+  previous: string | null;
+  count: number;
+  isUpdate: boolean;
+};
 
-  const [nextPage, setNextPage] = useState<string>("photos/");
-  const [breakPage, setBreakPage] = useState(false);
+type Analyse = {
+  id: string;
+  image: string;
+  there_disease: boolean;
+  created_at: string;
+};
+
+const url = "photos/?limit=:limite&offset=:offset";
+const limite = "10";
+export const usePhotos = ({
+  user: { id },
+}: {
+  user: {
+    id: string;
+  };
+}) => {
   const [loading, setLoading] = useState(false);
+  const [analyse, setAnalyse] = useState<Analyse[]>([]);
 
-  const handleLogaut = async () => {
-    signOut();
-    setTimeout(() => {
-      navigation.navigate("Login");
-    }, 1000);
+  const pagination = useRef<paginationType>({
+    next: null,
+    previous: null,
+    count: 0,
+    isUpdate: true,
+  });
+
+  const pickCameraAsync = async () => {
+    const imagePickResult = await PickImageAsync();
+    if (imagePickResult.canceled) {
+      Alert.alert("Você não selecionou nenhuma imagem.");
+      return;
+    }
+
+    const { fileUri, imageName } = await MoveImageAsync(imagePickResult);
+    const formData = new FormData();
+
+    const photo = {
+      uri: fileUri,
+      name: imageName,
+      type: imagePickResult.assets[0].mimeType || "",
+    };
+
+    formData.append("image", photo as any);
+    formData.append("user", id);
+    const response = await photosService.createPhotosImage(formData);
+
+    if (response.status !== HttpCode.CREATED) {
+      alert("Erro ao enviar a imagem");
+      return;
+    }
+
+    pagination.current.isUpdate = true;
+    await getAnalyses();
+
+    Alert.alert("Sucesso", "Imagem enviada com sucesso");
   };
 
-  const handleFetch = async () => {
+  const pickGaleriaAsync = async () => {
+    const imageGalleryResult = await PickImageGalleryAsync();
+    if (imageGalleryResult.canceled) {
+      Alert.alert("Você não selecionou nenhuma imagem.");
+      return;
+    }
+
+    const { fileUri, imageName } = await MoveImageAsync(imageGalleryResult);
+
+    const formData = new FormData();
+
+    const photo = {
+      uri: fileUri,
+      name: imageName,
+      type: imageGalleryResult.assets[0].mimeType || "",
+    };
+
+    formData.append("image", photo as any);
+
+    formData.append("user", id);
+
+    const response = await photosService.createPhotosImage(formData);
+
+    if (response.status !== HttpCode.CREATED) {
+      alert("Erro ao enviar a imagem");
+      return;
+    }
+
+    pagination.current.isUpdate = true;
+
+    await getAnalyses();
+  };
+
+  const getAnalyses = async () => {
     setLoading(true);
-    if (!user?.id) {
-      navigation.navigate("Login");
-      return;
-    }
-    if (breakPage || !nextPage) {
+
+    if (!pagination.current.isUpdate && !pagination.current.next) {
       setLoading(false);
       return;
     }
 
-    const response = await photosService.list(user?.id, nextPage); // Adicione o parâmetro da página à função da API
-    // Próxima página da API
-    if (response.status === HttpCode.UNAUTHORIZED) {
-      handleLogaut();
-      navigation.navigate("Login");
+    const urlRequest = url
+      .replace(":limite", limite)
+      .replace(":offset", pagination.current.next || "0");
+    console.log(urlRequest);
+
+    const response = await photosService.list(urlRequest);
+
+    if (response.status !== HttpCode.OK) {
+      alert("Erro ao buscar as imagens");
       return;
     }
 
-    if (nextPage === "photos/") {
-      setAnalyse(response.data.results);
+    pagination.current = {
+      next: response.data.next,
+      previous: response.data.previous,
+      count: response.data.count,
+      isUpdate: false,
+    };
+    const newAnalyse = response.data.results.filter((item: Analyse) => {
+      return !analyse.find((analyse) => analyse.id === item.id);
+    });
 
-      setNextPage(response.data?.next);
-      setBreakPage(response.data?.next === null ? true : false);
-      setLoading(false);
-      return;
-    }
+    setAnalyse([...analyse, ...newAnalyse]);
 
-    setAnalyse((oldValue) => [...oldValue, ...response.data.results]);
-    setNextPage(response.data?.next);
-    setBreakPage(response.data?.next === null ? true : false);
     setLoading(false);
   };
 
+  const deleteAnalyse = async (id: string) => {
+    const response = await photosService.deletePhoto(id);
+
+    if (response.status !== HttpCode.NO_CONTENT) {
+      alert("Erro ao deletar a imagem");
+      return;
+    }
+    const newAnalyse = analyse.filter((item) => item.id !== id);
+
+    setAnalyse(newAnalyse);
+  };
+
   return {
-    analyse,
-    handleFetch,
-    handleLogaut,
     loading,
-  }
+    analyse,
+    pickCameraAsync,
+    pickGaleriaAsync,
+    getAnalyses,
+    deleteAnalyse,
+  };
 };

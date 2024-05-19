@@ -1,79 +1,47 @@
-import { Image, Text, View } from "react-native";
+import { Alert, Image, Text, View } from "react-native";
 import { dateFormated } from "../../utils/dateFormated";
 import {
+  ButtonDelete,
   CardContainer,
-  CardContend,
+  CardContent,
   CardContentText,
+  CardDescription,
   CardImage,
   CardText,
   CardTitle,
 } from "./styles";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export const CardHome = ({
   item,
+  confirmeDelete,
 }: {
-  item: { image: string; there_disease: boolean; created_at: string };
+  item: {
+    id: string;
+    image: string;
+    there_disease: boolean;
+    created_at: string;
+  };
+  confirmeDelete: (id: string) => void;
 }) => {
   return (
-    // <View
-    //   style={{
-    //     backgroundColor: "#B9D497",
-    //     margin: 5,
-    //     padding: 10,
-    //     borderRadius: 8,
-    //   }}
-    // >
-    //   <View style={{ flexDirection: "row", alignItems: "center" }}>
-    //     <Image
-    //       source={{ uri: item.image }}
-    //       style={{ width: 150, height: 200 }}
-    //     />
-    //     <View style={{ flex: 1, alignItems: "center" }}>
-    //       <Text style={{ fontSize: 20, fontWeight: "bold", color: "#6F4E37" }}>
-    //         Folha analisada
-    //       </Text>
-    //       <Text
-    //         style={{
-    //           fontSize: 16,
-    //           color: "#6F4E37",
-    //           marginLeft: 20,
-    //           alignItems: "center",
-    //         }}
-    //       >
-    //         {item.there_disease === true &&
-    //           "Baseado na análise de imagem, a folha que você enviou está com uma praga"}
-
-    //         {item.there_disease === false &&
-    //           "Baseado na análise de imagem, a folha que você enviou está saudável"}
-    //       </Text>
-    //       <Text
-    //         style={{
-    //           fontSize: 16,
-    //           color: "#6F4E37",
-    //           marginLeft: 20,
-    //           alignItems: "center",
-    //         }}
-    //       >
-    //         data de análise: {dateFormated(item.created_at)}
-    //       </Text>
-    //     </View>
-    //   </View>
-    // </View>
-
     <CardContainer>
-      <CardContend>
+      <CardContent>
         <CardImage source={{ uri: item.image }} />
 
         <CardContentText>
-          <CardTitle>Folha analisada</CardTitle>
-          <CardText>
-            {item.there_disease === true
-              ? "Baseado na análise de imagem, a folha que você enviou está com uma praga"
-              : "Baseado na análise de imagem, a folha que você enviou está saudável"}
-          </CardText>
-          <CardText>data de análise: {dateFormated(item.created_at)}</CardText>
+          <CardTitle>Folha Analisada</CardTitle>
+          <CardDescription>
+            {item.there_disease
+              ? "Análise de imagem: Folha com praga"
+              : "Análise de imagem: Folha saudável"}
+          </CardDescription>
+          <CardText>Data de Análise: {dateFormated(item.created_at)}</CardText>
+          <ButtonDelete onPress={() => confirmeDelete(item.id)}>
+            <MaterialIcons name="delete" size={24} color="black" />
+          </ButtonDelete>
         </CardContentText>
-      </CardContend>
+      </CardContent>
     </CardContainer>
   );
 };

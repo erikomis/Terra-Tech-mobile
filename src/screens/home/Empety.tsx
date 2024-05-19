@@ -14,7 +14,7 @@ export const Empety = () => {
         style={{
           fontSize: 20,
           fontWeight: "bold",
-          color: "#6F4E37",
+          color: "#fff",
         }}
       >
         Nenhuma análise encontrada

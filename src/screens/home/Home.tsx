@@ -1,28 +1,34 @@
 import {
   FlatList,
   Alert,
-  View,
-  Text,
   ActivityIndicator,
-  Modal,
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
-import { useEffect } from "react";
+import { useEffect, } from "react";
 
 import { CardHome } from "./CardHome";
 import { HeaderHome } from "./HeaderHome";
 
-import { usePhotos } from "./usePhotos";
+
 import { useContextAuth } from "../../context/Auth.context";
-import { useCameraRequestUplaod } from "./useCameraRequestUplaod";
 import { Empety } from "./Empety";
+import { usePhotos } from "./usePhotos";
+
 
 export const Home = () => {
   const { user } = useContextAuth();
-  const { analyse, handleFetch, handleLogaut, loading } = usePhotos();
-  const { pickCameraAsync, pickImageAsync } = useCameraRequestUplaod();
-  const HandleAlertArma = () => {
+  const {
+    analyse,
+    deleteAnalyse,
+    pickCameraAsync,
+    getAnalyses,
+    loading,
+    pickGaleriaAsync,
+  } = usePhotos({
+    user: { id: user.id },
+  });
+  const handleAlertGaleria = () => {
     Alert.alert(
       "Atenção",
       "Para que analise funcione corretamente você precisa que escolher uma foto de uma folha de café.",
@@ -33,7 +39,7 @@ export const Home = () => {
         },
         {
           text: "OK",
-          onPress: () => pickImageAsync(),
+          onPress: () => pickGaleriaAsync(),
         },
       ]
     );
@@ -91,6 +97,19 @@ export const Home = () => {
     })(),
       [];
   });
+
+  const confirmeDelete = (id: string) => {
+    Alert.alert("Atenção", "Deseja realmente excluir essa análise?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "OK",
+        onPress: () => deleteAnalyse(id),
+      },
+    ]);
+  };
   return (
     <>
       <FlatList
@@ -99,18 +118,21 @@ export const Home = () => {
         ListHeaderComponent={
           <HeaderHome
             pickCameraAsync={hanldeAlertCamera}
-            pickImageAsync={HandleAlertArma}
-            handleLogaut={handleLogaut}
-            name={user?.name}
+            pickImageAsync={handleAlertGaleria}
+            name={user.name}
           />
         }
         ListEmptyComponent={<Empety />}
-        renderItem={({ item }) => <CardHome item={item} />}
-        keyExtractor={(item) => item.id.toString()}
-        onEndReached={() => handleFetch()}
+        renderItem={({ item }) => (
+          <CardHome item={item} confirmeDelete={confirmeDelete} />
+        )}
+        keyExtractor={(item) => {
+          return item.id.toString();
+        }}
+        onEndReached={() => getAnalyses()}
         onEndReachedThreshold={0.1}
         ListFooterComponent={
-          loading ? <ActivityIndicator size="large" color="#6F4E37" /> : null
+          loading ? <ActivityIndicator size="large" color="#fff" /> : null
         }
       />
     </>
