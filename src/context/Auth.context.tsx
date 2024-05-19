@@ -75,10 +75,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   async function signIn({ email, password }: SignInCredentials) {
     setLoading(true);
     const response = await authService.login(email, password);
-    if (response.status !== HttpCode.OK) {
+    if (response.status === HttpCode.BAD_REQUEST) {
       setLoading(false);
       return {
         mensagem: "Email ou senha invalidos",
+      };
+    }
+
+    if (response.status === HttpCode.INTERNAL_SERVER_ERROR) {
+      setLoading(false);
+      return {
+        mensagem: "Ocorreu um erro , tente novamente mais tarde",
       };
     }
 
