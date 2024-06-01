@@ -1,6 +1,5 @@
 import styled from "styled-components/native";
 import * as Animated from "react-native-animatable";
-import { TouchableOpacity } from "react-native";
 
 export const Container = styled.SafeAreaView`
   flex: 1;
@@ -13,17 +12,18 @@ export const ContainerHeader = styled(Animated.View)`
   align-items: center;
 `;
 export const FormContainer = styled(Animated.View)`
-  flex: 1;
-  width: 100%;
   background-color: white;
+  flex: 2;
+  width: 100%;
   align-items: center;
   border-top-right-radius: 25px;
-  margin-top: -25px;
+  margin-top: -25px; 
 `;
 
 export const Title = styled.Text`
   font-size: 30px;
-  margin-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   font-weight: bold;
 `;
 

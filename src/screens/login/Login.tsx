@@ -1,8 +1,13 @@
 import { InputBase } from "../../components/InputBase/InputBase";
 import { InputPasswordBase } from "../../components/InputBase/InputPasswordBase";
 import { Button } from "../../components/button/Button";
-import { ScrollView, TouchableOpacity, View } from "react-native";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
+import {
+  ParamListBase,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import {
@@ -16,12 +21,26 @@ import Logo from "../../assets/images/logo.svg";
 import { ErrorText } from "../../components/errorText/errorText";
 import { useFormLogin } from "./useFormLogin";
 import { useContextAuth } from "../../context/Auth.context";
+import { useEffect } from "react";
 
+type RouteParams = {
+  Login: {
+    message: string;
+  };
+};
 export const Login = () => {
+  const route = useRoute<RouteProp<RouteParams>>();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { loading } = useContextAuth();
   const { control, handleSubmit, errors, onSubmit, errorMensage } =
     useFormLogin();
+
+  useEffect(() => {
+
+    if (route.params) {
+      Alert.alert("Sucesso", route.params.message);
+    }
+  }, [route.params]);
   return (
     <Container>
       <ContainerHeader animation="fadeIn" delay={500}>
@@ -30,7 +49,7 @@ export const Login = () => {
             marginTop: -100,
           }}
         >
-          <Logo width={500} height={500} />
+          <Logo width={300} height={400} />
         </View>
       </ContainerHeader>
 

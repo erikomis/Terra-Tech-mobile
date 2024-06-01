@@ -19,6 +19,8 @@ export const HeaderHome = ({
         flex: 1,
         backgroundColor: "#d5fcd5",
         margin: 0,
+        borderBottomEndRadius: 10,
+        borderBottomStartRadius: 10,
       }}
     >
       <View
@@ -44,6 +46,7 @@ export const HeaderHome = ({
         <Text
           style={{
             color: "#f1f1f1",
+            fontSize: 16,
           }}
         >
           Tirar Foto para analise
@@ -53,6 +56,7 @@ export const HeaderHome = ({
         <Text
           style={{
             color: "#f1f1f1",
+            fontSize: 16,
           }}
         >
           Usar foto da galeria para a analise

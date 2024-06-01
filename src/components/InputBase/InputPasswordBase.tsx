@@ -31,7 +31,7 @@ export const InputPasswordBase = ({
 
         <TouchableOpacity
           onPress={() => setSecureTextEntry(!secureTextEntry)}
-          style={{ position: "absolute", right: 10, top: 20 }}
+          style={{ position: "absolute", right: 10, top: 20 , width: 20, height: 20}}
         >
           <MaterialIcons
             name={secureTextEntry ? "visibility-off" : "visibility"}

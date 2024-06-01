@@ -13,7 +13,7 @@ export const ContainerHeader = styled(Animated.View)`
   align-items: center;
 `;
 export const FormContainer = styled(Animated.View)`
-  flex: 1;
+  flex: 2;
   width: 100%;
   background-color: white;
   align-items: center;

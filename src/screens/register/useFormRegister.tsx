@@ -35,7 +35,10 @@ export const useFormRegister = () => {
     if (response) {
       setErrorMensage(response.mensagem);
     }
-    navigator.navigate("Login");
+    navigator.navigate("Login", {
+      message:
+        "Conta criada com sucesso! Verifique seu e-mail para ativar a conta.",
+    });
   };
 
   return {

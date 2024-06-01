@@ -2,8 +2,8 @@ import styled from "styled-components/native";
 
 export const Box = styled.View`
   width: 80%;
-  margin: 4px;
-  height: 100px;
+  margin: 4px; 
+  height: 82px;
 `;
 
 export const TextInput = styled.TextInput<{ $colorBorderType: boolean }>`
@@ -12,7 +12,7 @@ export const TextInput = styled.TextInput<{ $colorBorderType: boolean }>`
   color: #000;
   border: ${({ $colorBorderType }) =>
     $colorBorderType ? "1px solid red" : "1px solid #c3c8cc"};
-  border-radius: 4px;
+  border-radius: 6px;
   height: 56px;
   width: 100%;
 `;
@@ -21,12 +21,12 @@ export const Text = styled.Text<{ size?: string; colorType?: boolean }>`
   font-size: ${({ size }) => size || "24px"};
   color: ${({ colorType }) => (colorType ? "red" : "#000")};
   text-align: center;
-  padding: 6px;
+  padding: 6px; 
 `;
 export const BoxPassword = styled.View`
   width: 80%;
   margin: 4px;
-  height: 100px;
+  height: 82px;
   position: "relative";
   /* flex-direction: row;
   align-items: center; */
