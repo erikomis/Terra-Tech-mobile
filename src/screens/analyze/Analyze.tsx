@@ -1,40 +1,29 @@
 import { useState } from "react";
-import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Text, ActivityIndicator, Dimensions } from "react-native";
 import { CartesianChart, Bar } from "victory-native";
 import { LinearGradient, useFont, vec } from "@shopify/react-native-skia";
 import { useAnalyze } from "./useAnalyze";
 import RNPickerSelect from "react-native-picker-select";
 import { mouthrs } from "../../utils/mouthrs";
+import { colors } from "../../theme/colors";
+
+const { width } = Dimensions.get("window");
+const CHART_SIZE = width - 32;
 
 export const Analyze = () => {
   const font = useFont(require("../../fonts/Roboto-Regular.ttf"), 12);
-  const [innerPadding, setInnerPadding] = useState(0.8);
-  const [roundedCorner, setRoundedCorner] = useState(5);
-  const [selectedMouth, setSelectedMouth] = useState(
-    String(new Date().getMonth() + 1)
-  );
+  const [selectedMouth, setSelectedMouth] = useState(String(new Date().getMonth() + 1));
   const { analyze, loading, handleFetch } = useAnalyze();
 
   return (
-    <View style={{ flex: 1, alignItems: "center", backgroundColor: "#E5F5E5" }}>
-      <View style={{ marginTop: 50, width: 400, alignItems: "center" }}>
-        <Text style={{ fontSize: 24, fontWeight: "bold", color: "#28502E" }}>
-          Análise de Pragas de Café
-        </Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Análise de Pragas de Café</Text>
       </View>
 
-      <View
-        style={{
-          marginTop: 20,
-          width: 400,
-          height: 400,
-          backgroundColor: "#FFF",
-          borderRadius: 10,
-          padding: 10,
-        }}
-      >
+      <View style={[styles.card, { width: CHART_SIZE, height: CHART_SIZE }]}>
         {loading ? (
-          <ActivityIndicator size="large" color="#6F4E37" />
+          <ActivityIndicator size="large" color={colors.accent} />
         ) : (
           <>
             <CartesianChart
@@ -51,8 +40,8 @@ export const Analyze = () => {
                   if (value === 1) return "Doente";
                   return "";
                 },
-                lineColor: "#666",
-                labelColor: "#666",
+                lineColor: colors.textSecondary,
+                labelColor: colors.textSecondary,
               }}
               data={analyze}
             >
@@ -61,59 +50,42 @@ export const Analyze = () => {
                   points={points.count}
                   chartBounds={chartBounds}
                   animate={{ type: "spring" }}
-                  innerPadding={innerPadding}
-                  roundedCorners={{
-                    topLeft: roundedCorner,
-                    topRight: roundedCorner,
-                  }}
+                  innerPadding={0.8}
+                  roundedCorners={{ topLeft: 5, topRight: 5 }}
                 >
                   <LinearGradient
                     start={vec(0, 0)}
-                    end={vec(0, 400)}
-                    colors={["#78C557", "#583d1a"]}
+                    end={vec(0, CHART_SIZE)}
+                    colors={[colors.chartGradientStart, colors.chartGradientEnd]}
                   />
                 </Bar>
               )}
             </CartesianChart>
-            <View
-              style={{
-                borderTopWidth: 1,
-                borderTopColor: "#999",
-                marginTop: 10,
-              }}
-            >
+            <View style={styles.pickerContainer}>
               <RNPickerSelect
-                placeholder={{
-                  label: "Selecione o mês",
-                }}
+                placeholder={{ label: "Selecione o mês" }}
                 style={{
                   inputAndroid: {
-                    color: "#333",
-                    backgroundColor: "#FFF",
-
+                    color: colors.textMedium,
+                    backgroundColor: colors.white,
                     paddingHorizontal: 10,
                     borderRadius: 5,
-                    borderColor: "#999",
+                    borderColor: colors.borderSecondary,
                     borderWidth: 2,
                   },
                   inputIOS: {
-                    backgroundColor: "#FFF",
+                    backgroundColor: colors.white,
                     width: 200,
                     height: 50,
                     margin: 10,
                     padding: 10,
-                    color: "#333",
+                    color: colors.textMedium,
                     borderRadius: 5,
-                    borderColor: "#999",
+                    borderColor: colors.borderSecondary,
                     borderWidth: 1,
                   },
-                  placeholder: {
-                    color: "#666",
-                  },
-                  iconContainer: {
-                    top: 15,
-                    right: 15,
-                  },
+                  placeholder: { color: colors.textSecondary },
+                  iconContainer: { top: 15, right: 15 },
                 }}
                 onValueChange={(value) => {
                   setSelectedMouth(value);
@@ -131,17 +103,29 @@ export const Analyze = () => {
 };
 
 const styles = StyleSheet.create({
-  chart: {
-    flex: 1.5,
-  },
-  optionsScrollView: {
+  container: {
     flex: 1,
-    backgroundColor: "transparent",
+    alignItems: "center",
+    backgroundColor: colors.primaryBackground,
   },
-  options: {
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
+  header: {
+    marginTop: 50,
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: colors.primary,
+  },
+  card: {
+    marginTop: 20,
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    padding: 10,
+  },
+  pickerContainer: {
+    borderTopWidth: 1,
+    borderTopColor: colors.borderSecondary,
+    marginTop: 10,
   },
 });

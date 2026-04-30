@@ -1,49 +1,47 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Alert } from "react-native";
+import { HttpCode } from "../../service/httpCode";
 import { photosService } from "../../service/photos.service";
 
-export const useAnalyze = () => {
-  const [analyze, setAnalyze] = useState<
-    {
-      type: number;
-      count: number;
-    }[]
-  >([]);
-  const [loading, setLoading] = useState(false);
-  const handleFetch = async (month?: string) => {
-    setLoading(true);
-    const mesAtual = String(new Date().getMonth() + 1);
-    const response = await photosService.analise(month ? month : mesAtual);
-    if (response.status === 200) {
-      const responseAdpter = [
-        {
-          type: 1,
-          count: response.data.true_disease,
-        },
-        {
-          type: 0,
-          count: response.data.false_disease,
-        },
-      ];
+type AnalyzeData = {
+  type: number;
+  count: number;
+};
 
-      setAnalyze(responseAdpter);
+export const useAnalyze = () => {
+  const [analyze, setAnalyze] = useState<AnalyzeData[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleFetch = useCallback(async (month?: string) => {
+    setLoading(true);
+    try {
+      const currentMonth = String(new Date().getMonth() + 1);
+      const response = await photosService.analise(month ?? currentMonth);
+
+      if (response.status === HttpCode.OK) {
+        setAnalyze([
+          { type: 1, count: response.data.true_disease },
+          { type: 0, count: response.data.false_disease },
+        ]);
+        return;
+      }
+
+      if (response.status === HttpCode.UNAUTHORIZED) {
+        Alert.alert("Sessão expirada", "Faça login novamente.");
+        return;
+      }
+
+      Alert.alert("Erro", "Erro ao buscar análises. Tente novamente.");
+    } catch {
+      Alert.alert("Erro", "Erro ao buscar análises. Tente novamente.");
+    } finally {
       setLoading(false);
     }
-    if (response.status === 401) {
-      console.log("error");
-    }
-
-    if (response.status === 500) {
-      console.log("error");
-    }
-  };
+  }, []);
 
   useEffect(() => {
     handleFetch();
-  }, []);
+  }, [handleFetch]);
 
-  return {
-    loading,
-    analyze,
-    handleFetch,
-  };
+  return { loading, analyze, handleFetch };
 };
