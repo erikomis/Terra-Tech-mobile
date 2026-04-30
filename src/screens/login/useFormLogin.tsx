@@ -3,16 +3,14 @@ import { useForm } from "react-hook-form";
 import { schemaLogin } from "../../yup/schemasValidations";
 import { useState } from "react";
 import { useContextAuth } from "../../context/Auth.context";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+
 type FormData = {
   email: string;
   password: string;
 };
 
 export const useFormLogin = () => {
-  const navigator = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const [errorMensage, setErrorMensage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const { signIn } = useContextAuth();
   const {
     control,
@@ -20,26 +18,16 @@ export const useFormLogin = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schemaLogin),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
+
   const onSubmit = async (data: FormData) => {
     const response = await signIn(data);
-    
-    if (response?.mensagem) {
-      setErrorMensage(response.mensagem);
-      return;
+    if (response?.message) {
+      setErrorMessage(response.message);
     }
-    navigator.navigate("Login");
+    // Navigation handled automatically by Router when user state updates
   };
 
-  return {
-    control,
-    handleSubmit,
-    errors,
-    onSubmit,
-    errorMensage,
-  };
+  return { control, handleSubmit, errors, onSubmit, errorMessage };
 };

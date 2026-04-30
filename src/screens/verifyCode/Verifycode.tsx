@@ -1,5 +1,6 @@
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../routes/types";
 import { Button } from "../../components/button/Button";
 import { TouchableOpacity, View } from "react-native";
 import { InputBase } from "../../components/InputBase/InputBase";
@@ -13,10 +14,11 @@ import {
 import { useFormVerifyCode } from "./useFormVerifyCode";
 import Logo from "../../assets/images/logo.svg";
 import { useContextAuth } from "../../context/Auth.context";
+import { ErrorText } from "../../components/errorText/errorText";
 
 export const VerifyCode = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const { control, errorMensage, errors, onSubmit, handleSubmit } =
+  const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
+  const { control, errorMessage, errors, onSubmit, handleSubmit } =
     useFormVerifyCode();
     const { loading } = useContextAuth();
   return (
@@ -44,6 +46,7 @@ export const VerifyCode = () => {
           onPress={handleSubmit(onSubmit)}
           title="Acessar"
         />
+        {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <ButtonTextUrderline>Voltar para o login</ButtonTextUrderline>
         </TouchableOpacity>

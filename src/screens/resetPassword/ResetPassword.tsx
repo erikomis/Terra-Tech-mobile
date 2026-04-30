@@ -1,9 +1,5 @@
-import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
 import { Button } from "../../components/button/Button";
 import { TouchableOpacity } from "react-native";
-
 import {
   ButtonTextUrderline,
   Container,
@@ -16,20 +12,20 @@ import { View } from "react-native-animatable";
 import Logo from "../../assets/images/logo.svg";
 import { useResetPassword } from "./useResetPassword";
 import { useContextAuth } from "../../context/Auth.context";
+import { ErrorText } from "../../components/errorText/errorText";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
+import { AuthStackParamList } from "../../routes/types";
 
 export const ResetPassword = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
   const { loading } = useContextAuth();
+  const { control, errors, handleSubmit, onSubmit, errorMessage } = useResetPassword();
 
-  const { control, errors, handleSubmit, onSubmit } = useResetPassword();
   return (
     <Container>
       <ContainerLogo delay={500} animation={"flipInY"}>
-        <View
-          style={{
-            marginTop: -5,
-          }}
-        >
+        <View style={{ marginTop: -5 }}>
           <Logo width={300} height={400} />
         </View>
       </ContainerLogo>
@@ -39,15 +35,15 @@ export const ResetPassword = () => {
           control={control}
           errors={errors}
           name="password"
-          placeholder={"Senha"}
+          placeholder="Senha"
         />
-
         <InputPasswordBase
           control={control}
           errors={errors}
           name="confirmPassword"
-          placeholder={"Confirmar Senha"}
+          placeholder="Confirmar Senha"
         />
+        {errorMessage ? <ErrorText>{errorMessage}</ErrorText> : null}
         <Button
           disabled={loading}
           IsBoxContainer

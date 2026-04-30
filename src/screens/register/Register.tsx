@@ -1,9 +1,10 @@
 import { InputBase } from "../../components/InputBase/InputBase";
 import { InputPasswordBase } from "../../components/InputBase/InputPasswordBase";
 import { Button } from "../../components/button/Button";
-import { ScrollView, Text, TouchableOpacity } from "react-native";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { ScrollView, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../routes/types";
 import { ErrorText } from "../../components/errorText/errorText";
 import {
   ButtonTextUrderline,
@@ -17,8 +18,8 @@ import { View } from "react-native-animatable";
 import Logo from "../../assets/images/logo.svg";
 import { useContextAuth } from "../../context/Auth.context";
 export const Register = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const { control, errorMensage, errors, handleSubmit, onSubmit } =
+  const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
+  const { control, errorMessage, errors, handleSubmit, onSubmit } =
     useFormRegister();
     const { loading } = useContextAuth();
   return (
@@ -86,7 +87,7 @@ export const Register = () => {
             IsBoxContainer
             disabled={loading}
           />
-          {errorMensage && <ErrorText>{errorMensage}</ErrorText>}
+          {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
         </ScrollView>
       </FormContainer>
     </Container>
