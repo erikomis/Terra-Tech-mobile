@@ -75,6 +75,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   async function signIn({ email, password }: SignInCredentials) {
     setLoading(true);
     const response = await authService.login(email, password);
+    console.log(response);
+    
     if (response.status === HttpCode.BAD_REQUEST) {
       setLoading(false);
       return {

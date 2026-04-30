@@ -30,7 +30,7 @@ export const ResetPassword = () => {
             marginTop: -5,
           }}
         >
-          <Logo width={500} height={500} />
+          <Logo width={300} height={400} />
         </View>
       </ContainerLogo>
       <ContainerForm delay={1000} animation={"fadeInUp"}>

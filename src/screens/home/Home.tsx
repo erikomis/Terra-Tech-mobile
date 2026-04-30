@@ -62,41 +62,80 @@ export const Home = () => {
     );
   };
 
-  useEffect(() => {
-    Alert.alert(
-      "Atenção",
-      "Para que analise funcione corretamente, precisa que seja escolhido foto uma folha de café",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "OK",
-        },
-      ]
-    );
-  }, []);
+  // useEffect(() => {
+  //   Alert.alert(
+  //     "Atenção",
+  //     "Para que analise funcione corretamente, precisa que seja escolhido foto uma folha de café",
+  //     [
+  //       {
+  //         text: "Cancelar",
+  //         style: "cancel",
+  //       },
+  //       {
+  //         text: "OK",
+  //       },
+  //     ]
+  //   );
+  // }, []);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const { status } =
+  //       await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+  //     const statusCamera = await ImagePicker.requestCameraPermissionsAsync();
+  //     if (statusCamera.status !== "granted") {
+  //       alert(
+  //         "Desculpe, precisamos de permissões de câmera para fazer isso funcionar!"
+  //       );
+  //     }
+  //     if (status !== "granted") {
+  //       alert(
+  //         "Desculpe, precisamos de permissões de armazenamento para fazer isso funcionar!"
+  //       );
+  //     }
+  //   })(),
+  //     [];
+  // });
 
   useEffect(() => {
-    (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const showAlertAndRequestPermissions = async () => {
+      // Mostrar alerta
+      Alert.alert(
+        "Atenção",
+        "Para que a análise funcione corretamente, é necessário escolher uma foto de uma folha de café",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "OK",
+          },
+        ]
+      );
 
-      const statusCamera = await ImagePicker.requestCameraPermissionsAsync();
-      if (statusCamera.status !== "granted") {
-        alert(
+      // Solicitar permissões
+      const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+
+      if (cameraStatus !== "granted") {
+        Alert.alert(
+          "Permissão necessária",
           "Desculpe, precisamos de permissões de câmera para fazer isso funcionar!"
         );
       }
-      if (status !== "granted") {
-        alert(
+
+      if (mediaStatus !== "granted") {
+        Alert.alert(
+          "Permissão necessária",
           "Desculpe, precisamos de permissões de armazenamento para fazer isso funcionar!"
         );
       }
-    })(),
-      [];
-  });
+    };
+
+    showAlertAndRequestPermissions();
+  }, []);
 
   const confirmeDelete = (id: string) => {
     Alert.alert("Atenção", "Deseja realmente excluir essa análise?", [
@@ -113,7 +152,7 @@ export const Home = () => {
   return (
     <>
       <FlatList
-        style={{ marginTop: 5, backgroundColor: "#28502E", flex: 1 }}
+        style={{ marginTop: 0, backgroundColor: "#28502E", flex: 1 }}
         data={analyse}
         ListHeaderComponent={
           <HeaderHome

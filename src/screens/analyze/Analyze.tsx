@@ -45,7 +45,7 @@ export const Analyze = () => {
               domain={{ y: [0, 100] }}
               axisOptions={{
                 font,
-                tickCount: 19,
+                tickCount: 17,
                 formatXLabel: (value) => {
                   if (value === 0) return "Saudável";
                   if (value === 1) return "Doente";
@@ -90,7 +90,7 @@ export const Analyze = () => {
                   inputAndroid: {
                     color: "#333",
                     backgroundColor: "#FFF",
-          
+
                     paddingHorizontal: 10,
                     borderRadius: 5,
                     borderColor: "#999",

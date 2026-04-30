@@ -28,7 +28,7 @@ export const Register = () => {
           marginTop: -80,
         
         }}>
-          <Logo width={500} height={500} />
+          <Logo width={300} height={400} />
         </View>
       </ContainerHeader>
 
