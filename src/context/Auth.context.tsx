@@ -2,8 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useState } from "react";
 import { authService } from "../service/auth.service";
 import { HttpCode } from "../service/httpCode";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AdapterHttp } from "../service/api";
 
 export const AuthContext = createContext({} as AuthContextData);
 
@@ -12,12 +11,8 @@ interface AuthContextData {
   verifyToken: string;
   addToken: (token: string) => void;
   clearVerifyToken: () => void;
-  signIn: (
-    credentials: SignInCredentials
-  ) => Promise<{ mensagem: string } | void>;
-  register: (
-    credentials: RegisterCredentials
-  ) => Promise<{ mensagem: string } | void>;
+  signIn: (credentials: SignInCredentials) => Promise<{ message: string } | void>;
+  register: (credentials: RegisterCredentials) => Promise<{ message: string } | void>;
   signOut: () => Promise<void>;
   loading: boolean;
 }
@@ -33,6 +28,7 @@ interface SignInCredentials {
   email: string;
   password: string;
 }
+
 interface RegisterCredentials {
   name: string;
   lastName: string;
@@ -49,23 +45,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [verifyToken, setVerifyToken] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const clearVerifyToken = () => {
-    setVerifyToken("");
-  };
-
-  const addToken = (token: string) => {
-    setVerifyToken(token);
-  };
+  const clearVerifyToken = () => setVerifyToken("");
+  const addToken = (token: string) => setVerifyToken(token);
 
   async function loadStorageData() {
     setLoading(true);
-    const user = await AsyncStorage.getItem("@rn:auth:user");
-    if (user) {
-      const userParsed = JSON.parse(user);
-      setUser(userParsed);
+    try {
+      const stored = await AsyncStorage.getItem("@rn:auth:user");
+      if (stored) {
+        const userParsed = JSON.parse(stored) as User;
+        AdapterHttp.setToken(userParsed.token);
+        setUser(userParsed);
+      }
+    } catch {
+      // storage read failed, user stays logged out
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -74,90 +70,63 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signIn({ email, password }: SignInCredentials) {
     setLoading(true);
-    const response = await authService.login(email, password);
-    console.log(response);
-    
-    if (response.status === HttpCode.BAD_REQUEST) {
-      setLoading(false);
-      return {
-        mensagem: "Email ou senha invalidos",
-      };
-    }
+    try {
+      const response = await authService.login(email, password);
 
-    if (response.status === HttpCode.INTERNAL_SERVER_ERROR) {
-      setLoading(false);
-      return {
-        mensagem: "Ocorreu um erro , tente novamente mais tarde",
-      };
-    }
+      if (response.status === HttpCode.BAD_REQUEST) {
+        return { message: "Email ou senha inválidos" };
+      }
+      if (response.status === HttpCode.INTERNAL_SERVER_ERROR) {
+        return { message: "Ocorreu um erro, tente novamente mais tarde" };
+      }
 
-    await AsyncStorage.setItem(
-      "@rn:auth:user",
-      JSON.stringify({
+      const userData: User = {
         id: response.data.user.id,
         email: response.data.user.email,
-        name:
-          response.data.user.first_name + " " + response.data.user.last_name,
+        name: `${response.data.user.first_name} ${response.data.user.last_name}`,
         token: response.data.token,
-      })
-    );
+      };
 
-    setUser({
-      id: response.data.user.id,
-      name: response.data.user.first_name + " " + response.data.user.last_name,
-      email: response.data.user.email,
-      token: response.data.token,
-    });
-    setLoading(false);
+      await AsyncStorage.setItem("@rn:auth:user", JSON.stringify(userData));
+      setUser(userData);
+    } catch {
+      return { message: "Ocorreu um erro, tente novamente mais tarde" };
+    } finally {
+      setLoading(false);
+    }
   }
 
-  async function register({
-    name,
-    lastName,
-    email,
-    password,
-  }: RegisterCredentials) {
+  async function register({ name, lastName, email, password }: RegisterCredentials) {
     setLoading(true);
-    const response = await authService.register(
-      name,
-      lastName,
-      email,
-      password
-    );
-    if (response.status !== HttpCode.CREATED) {
+    try {
+      const response = await authService.register(name, lastName, email, password);
+      if (response.status !== HttpCode.CREATED) {
+        return { message: "Erro ao criar conta. Verifique os dados e tente novamente" };
+      }
+    } catch {
+      return { message: "Ocorreu um erro, tente novamente mais tarde" };
+    } finally {
       setLoading(false);
-      return {
-        mensagem: "Email ou senha invalidos",
-      };
     }
-
-    setLoading(false);
   }
 
   async function signOut() {
-    await AsyncStorage.removeItem("@rn:auth:user");
-    authService.logout();
-    setUser({} as User);
+    try {
+      await AsyncStorage.removeItem("@rn:auth:user");
+      await authService.logout();
+    } finally {
+      AdapterHttp.clearToken();
+      setUser({} as User);
+    }
   }
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        signIn,
-        signOut,
-        register,
-        loading,
-        clearVerifyToken,
-        verifyToken,
-        addToken,
-      }}
+      value={{ user, signIn, signOut, register, loading, clearVerifyToken, verifyToken, addToken }}
     >
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useContextAuth = () => {
-  return useContext(AuthContext);
-};
+export const useContextAuth = () => useContext(AuthContext);
