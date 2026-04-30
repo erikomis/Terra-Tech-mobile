@@ -12,7 +12,8 @@ export const schemaRegister = yup.object().shape({
   password: yup.string().required().min(6).max(16),
   confirmPassword: yup
     .string()
-    .oneOf([yup.ref("password"), ], "As senhas não conferem"),
+    .required()
+    .oneOf([yup.ref("password")], "As senhas não conferem"),
 });
 
 export const schemaForgotPassword = yup.object().shape({
@@ -27,5 +28,6 @@ export const schemaResetPassword = yup.object().shape({
   password: yup.string().required().min(6).max(16),
   confirmPassword: yup
     .string()
-    .oneOf([yup.ref("password"), "As senhas não conferem"]),
+    .required()
+    .oneOf([yup.ref("password")], "As senhas não conferem"),
 });
