@@ -7,9 +7,10 @@ export const Container = styled.SafeAreaView`
 `;
 
 export const ContainerHeader = styled(Animated.View)`
-  height: 20%;
+  flex: 1;
   width: 100%;
   background-color: #28502e;
+  align-items: center;
 `;
 export const FormContainer = styled(Animated.View)`
   flex: 1;

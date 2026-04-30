@@ -14,7 +14,7 @@ type FormData = {
 
 
 export const useFormRegister = () => {
-  
+  const navigator = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [errorMensage, setErrorMensage] = useState<string>("");
   const { register } = useContextAuth();
   const {
@@ -35,6 +35,7 @@ export const useFormRegister = () => {
     if (response) {
       setErrorMensage(response.mensagem);
     }
+    navigator.navigate("Login");
   };
 
   return {

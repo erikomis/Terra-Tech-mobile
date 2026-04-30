@@ -2,11 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useState } from "react";
 import { authService } from "../service/auth.service";
 import { HttpCode } from "../service/httpCode";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export const AuthContext = createContext({} as AuthContextData);
 
 interface AuthContextData {
-  user: User | undefined;
+  user: User;
   verifyToken: string;
   addToken: (token: string) => void;
   clearVerifyToken: () => void;
@@ -43,9 +45,10 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User>({} as User);
   const [verifyToken, setVerifyToken] = useState("");
   const [loading, setLoading] = useState(false);
+
   const clearVerifyToken = () => {
     setVerifyToken("");
   };
@@ -53,55 +56,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const addToken = (token: string) => {
     setVerifyToken(token);
   };
-  useEffect(() => {
-    async function loadStorageData() {
-      setLoading(true);
-      const user = await AsyncStorage.getItem("@rn:auth:user");
-      if (user) {
-        setUser(JSON.parse(user));
-      }
 
-      setLoading(false);
+  async function loadStorageData() {
+    setLoading(true);
+    const user = await AsyncStorage.getItem("@rn:auth:user");
+    if (user) {
+      const userParsed = JSON.parse(user);
+      setUser(userParsed);
     }
+
+    setLoading(false);
+  }
+
+  useEffect(() => {
     loadStorageData();
   }, []);
 
   async function signIn({ email, password }: SignInCredentials) {
-    // try {
+    setLoading(true);
     const response = await authService.login(email, password);
-    if (response.status !== HttpCode.OK) {
-      console.log(response);
+    if (response.status === HttpCode.BAD_REQUEST) {
+      setLoading(false);
       return {
         mensagem: "Email ou senha invalidos",
       };
     }
-    await AsyncStorage.setItem(
-      "@rn:auth:user",
-      JSON.stringify({
-        user: response.data.user,
-        token: response.data.token,
-      })
-    );
 
-    setUser(response.data.user);
-  }
-
-  async function register({
-    name,
-    lastName,
-    email,
-    password,
-  }: RegisterCredentials) {
-    const response = await authService.register(
-      name,
-      lastName,
-      email,
-      password
-    );
-
-    if (response.status !== HttpCode.CREATED) {
+    if (response.status === HttpCode.INTERNAL_SERVER_ERROR) {
+      setLoading(false);
       return {
-        mensagem: "Email ou senha invalidos",
+        mensagem: "Ocorreu um erro , tente novamente mais tarde",
       };
     }
 
@@ -109,9 +93,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       "@rn:auth:user",
       JSON.stringify({
         id: response.data.user.id,
+        email: response.data.user.email,
         name:
           response.data.user.first_name + " " + response.data.user.last_name,
-        email: response.data.user.email,
         token: response.data.token,
       })
     );
@@ -122,6 +106,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
       email: response.data.user.email,
       token: response.data.token,
     });
+    setLoading(false);
+  }
+
+  async function register({
+    name,
+    lastName,
+    email,
+    password,
+  }: RegisterCredentials) {
+    setLoading(true);
+    const response = await authService.register(
+      name,
+      lastName,
+      email,
+      password
+    );
+    if (response.status !== HttpCode.CREATED) {
+      setLoading(false);
+      return {
+        mensagem: "Email ou senha invalidos",
+      };
+    }
+
+    setLoading(false);
   }
 
   async function signOut() {
@@ -140,7 +148,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         loading,
         clearVerifyToken,
         verifyToken,
-        addToken
+        addToken,
       }}
     >
       {children}

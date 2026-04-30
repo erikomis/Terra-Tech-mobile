@@ -15,19 +15,20 @@ import {
 import { useFormRegister } from "./useFormRegister";
 import { View } from "react-native-animatable";
 import Logo from "../../assets/images/logo.svg";
+import { useContextAuth } from "../../context/Auth.context";
 export const Register = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { control, errorMensage, errors, handleSubmit, onSubmit } =
     useFormRegister();
+    const { loading } = useContextAuth();
   return (
     <Container>
       <ContainerHeader animation="fadeIn" delay={500}>
-        <View
-          style={{
-            marginTop: -22,
-          }}
-        >
-          <Logo width={400} height={200} />
+        <View style={{
+          marginTop: -80,
+        
+        }}>
+          <Logo width={500} height={500} />
         </View>
       </ContainerHeader>
 
@@ -42,7 +43,7 @@ export const Register = () => {
           }}
         >
           <Title>Criar Conta</Title>
-          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <ButtonTextUrderline>
               Já registrado? acesse Aqui
             </ButtonTextUrderline>
@@ -81,8 +82,9 @@ export const Register = () => {
           />
           <Button
             onPress={handleSubmit(onSubmit)}
-            title="Login"
+            title="Criar Conta"
             IsBoxContainer
+            disabled={loading}
           />
           {errorMensage && <ErrorText>{errorMensage}</ErrorText>}
         </ScrollView>

@@ -10,16 +10,16 @@ import {
   Container,
   ContainerHeader,
   FormContainer,
-  SubTitle,
   Title,
 } from "./style";
 import Logo from "../../assets/images/logo.svg";
 import { ErrorText } from "../../components/errorText/errorText";
 import { useFormLogin } from "./useFormLogin";
+import { useContextAuth } from "../../context/Auth.context";
 
 export const Login = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-
+  const { loading } = useContextAuth();
   const { control, handleSubmit, errors, onSubmit, errorMensage } =
     useFormLogin();
   return (
@@ -30,7 +30,7 @@ export const Login = () => {
             marginTop: -100,
           }}
         >
-          <Logo width={400} height={400}  />
+          <Logo width={500} height={500} />
         </View>
       </ContainerHeader>
 
@@ -44,29 +44,37 @@ export const Login = () => {
             alignItems: "center",
           }}
         >
-        <Title>Login</Title>
-        <SubTitle>Faça o login para continuar </SubTitle>
-        <InputBase
-          control={control}
-          errors={errors}
-          name="email"
-          placeholder="Email"
-        />
+          <Title>Login</Title>
+          <InputBase
+            autocomplete="email"
+            control={control}
+            errors={errors}
+            name="email"
+            placeholder="Email"
+          />
 
-        <InputPasswordBase
-          control={control}
-          errors={errors}
-          name="password"
-          placeholder={"Senha"}
-        />
-        <Button onPress={handleSubmit(onSubmit)} title="Login" IsBoxContainer />
-        {errorMensage && <ErrorText>{errorMensage}</ErrorText>}
-        <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-          <ButtonTextUrderline>Esqueceu a senha?</ButtonTextUrderline>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-          <ButtonTextUrderline>Criar conta</ButtonTextUrderline>
-        </TouchableOpacity>
+          <InputPasswordBase
+            control={control}
+            errors={errors}
+            name="password"
+            placeholder={"Senha"}
+          />
+          {errorMensage && <ErrorText>{errorMensage}</ErrorText>}
+          <Button
+            onPress={handleSubmit(onSubmit)}
+            title="Acessar"
+            IsBoxContainer
+            disabled={loading}
+          />
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ForgotPassword")}
+          >
+            <ButtonTextUrderline>Esqueceu a senha?</ButtonTextUrderline>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+            <ButtonTextUrderline>Criar conta</ButtonTextUrderline>
+          </TouchableOpacity>
         </ScrollView>
       </FormContainer>
     </Container>

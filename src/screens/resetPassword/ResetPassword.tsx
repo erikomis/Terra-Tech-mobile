@@ -12,22 +12,22 @@ import {
   Title,
 } from "./style";
 import { InputPasswordBase } from "../../components/InputBase/InputPasswordBase";
-import { useFormForgotPassword } from "../forgotPassword/useFormForgotPassword";
 import { View } from "react-native-animatable";
 import Logo from "../../assets/images/logo.svg";
-
+import { useResetPassword } from "./useResetPassword";
+import { useContextAuth } from "../../context/Auth.context";
 
 export const ResetPassword = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const { loading } = useContextAuth();
 
-  const { control, errors, handleSubmit, onSubmit } = useFormForgotPassword();
-  
+  const { control, errors, handleSubmit, onSubmit } = useResetPassword();
   return (
     <Container>
       <ContainerLogo delay={500} animation={"flipInY"}>
         <View
           style={{
-            marginTop: -80,
+            marginTop: -5,
           }}
         >
           <Logo width={500} height={500} />
@@ -49,6 +49,7 @@ export const ResetPassword = () => {
           placeholder={"Confirmar Senha"}
         />
         <Button
+          disabled={loading}
           IsBoxContainer
           onPress={handleSubmit(onSubmit)}
           title="Criar nova senha"

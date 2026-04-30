@@ -41,7 +41,7 @@ api.interceptors.response.use(
       if (errorMessageDecode)
         errorMessage = JSON.parse(errorMessageDecode || "{}");
     }
-
+    
     const responseErrorModel: IReqErrorResponse & {
       status?: number;
       errors: any;
@@ -58,15 +58,19 @@ api.interceptors.response.use(
 );
 
 export const AdapterHttp = {
-  request: async (url: string, method: string, data?: any) => {
+  request: async (url: string, method: string, data?: any, headers?: any) => {
     const response = await api({
       url,
       method,
       data,
+      headers,
     });
     return response;
   },
   clearToken: () => {
     api.defaults.headers.common["Authorization"] = "";
+  },
+  setToken: (token: string) => {
+    api.defaults.headers.common["Authorization"] = `token ${token}`;
   },
 };

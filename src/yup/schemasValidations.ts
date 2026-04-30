@@ -1,7 +1,5 @@
 import yup from "./yupLocale";
 
-
-
 export const schemaLogin = yup.object().shape({
   email: yup.string().required().email(),
   password: yup.string().required().min(6).max(16),
@@ -12,7 +10,9 @@ export const schemaRegister = yup.object().shape({
   lastName: yup.string().required().min(3),
   email: yup.string().required().email(),
   password: yup.string().required().min(6).max(16),
-  confirmPassword: yup.string().oneOf([yup.ref("password")]),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password"), ], "As senhas não conferem"),
 });
 
 export const schemaForgotPassword = yup.object().shape({
@@ -25,5 +25,7 @@ export const schemaVerifyCode = yup.object().shape({
 
 export const schemaResetPassword = yup.object().shape({
   password: yup.string().required().min(6).max(16),
-  confirmPassword: yup.string().oneOf([yup.ref("password")]),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password"), "As senhas não conferem"]),
 });
