@@ -1,13 +1,11 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { Welcome } from "../screens/welcome/Welcome";
 import { Home } from "../screens/home/Home";
-import { View } from "react-native";
 import CustomDrawer from "./DrawerContent";
-import { Fontisto } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
+import { Fontisto, Ionicons } from "@expo/vector-icons";
 import { Analyze } from "../screens/analyze/Analyze";
-const Drawer = createDrawerNavigator();
+import { AppDrawerParamList } from "./types";
 
+const Drawer = createDrawerNavigator<AppDrawerParamList>();
 
 export const AppRouter = () => {
   return (
@@ -20,9 +18,7 @@ export const AppRouter = () => {
         component={Home}
         options={{
           headerTitle: "",
-          drawerIcon: ({ color }) => (
-            <Fontisto name="home" size={24} color="black" />
-          ),
+          drawerIcon: () => <Fontisto name="home" size={24} color="black" />,
         }}
       />
       <Drawer.Screen
@@ -30,9 +26,7 @@ export const AppRouter = () => {
         component={Analyze}
         options={{
           headerTitle: "",
-          drawerIcon: ({ color }) => (
-            <Ionicons name="analytics" size={24} color="black" />
-          ),
+          drawerIcon: () => <Ionicons name="analytics" size={24} color="black" />,
         }}
       />
     </Drawer.Navigator>
