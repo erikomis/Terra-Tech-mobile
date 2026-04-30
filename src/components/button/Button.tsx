@@ -4,14 +4,14 @@ type ButtonProps = {
   title: string;
   onPress: () => void;
   IsBoxContainer?: boolean;
-  disabled: boolean;
+  disabled?: boolean;
 };
 
 export const Button = ({
   title,
   onPress,
   IsBoxContainer,
-  disabled,
+  disabled = false,
 }: ButtonProps) => {
   return (
     <>

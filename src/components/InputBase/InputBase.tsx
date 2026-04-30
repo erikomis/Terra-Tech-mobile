@@ -1,11 +1,14 @@
-import {
-  Controller,
-} from "react-hook-form";
+import { Control, Controller, FieldErrors } from "react-hook-form";
 import { Box, Text, TextInput } from "./styles";
 
+interface InputBaseProps {
+  name: string;
+  control: Control<any>;
+  errors: FieldErrors<any>;
+  placeholder?: string;
+}
 
-
-export const InputBase = ({ name, control, errors, placeholder }: any) => {
+export const InputBase = ({ name, control, errors, placeholder }: InputBaseProps) => {
   return (
     <Box>
       <Controller
@@ -15,7 +18,6 @@ export const InputBase = ({ name, control, errors, placeholder }: any) => {
           <TextInput
             placeholder={placeholder}
             onBlur={onBlur}
-  
             onChangeText={onChange}
             value={value}
             $colorBorderType={!!errors?.[name]?.message}
