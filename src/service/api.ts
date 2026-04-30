@@ -1,74 +1,78 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 interface IReqErrorResponse {
   error?: boolean;
   message?: string;
+  errors?: string | string[];
+  status?: number;
 }
 
+const BASE_URL = "https://projetos-web.com/";
+
 export const api = axios.create({
-  baseURL: "https://projetos-web.com/",
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response: AxiosResponse) => response,
   async (error: AxiosError<Partial<IReqErrorResponse>>) => {
-    // TODO: testar
+    let errorMessage: string | null = null;
 
-    // const response = await refreshaccessToken(error);
-    // return response;
+    const rawErrors = error?.response?.data?.errors;
+    if (Array.isArray(rawErrors) && rawErrors.length) {
+      errorMessage = rawErrors.join(", ");
+    } else if (typeof rawErrors === "string" && rawErrors) {
+      errorMessage = rawErrors;
+    }
 
-    let errorMessage: any = null;
-    if (!errorMessage?.length)
-      errorMessage = error?.response?.data?.["errors" as never];
-    if (!errorMessage?.length) errorMessage = error?.response?.data?.message;
-    if (!errorMessage?.length) errorMessage = error.message;
+    if (!errorMessage) errorMessage = error?.response?.data?.message ?? null;
+    if (!errorMessage) errorMessage = error.message;
 
     const dataBuffer = error.response?.data;
 
     if (dataBuffer instanceof ArrayBuffer) {
-      const errorMessageDecode = JSON.parse(
-        new TextDecoder().decode(dataBuffer)
-      );
-      if (errorMessageDecode?.message)
-        errorMessage = errorMessageDecode.message;
+      try {
+        const decoded = JSON.parse(new TextDecoder().decode(dataBuffer));
+        if (decoded?.message) errorMessage = decoded.message;
+      } catch {
+        // ignore decode errors
+      }
     } else if (dataBuffer instanceof Blob) {
-      const errorMessageDecode = await new Response(dataBuffer).text();
-      if (errorMessageDecode)
-        errorMessage = JSON.parse(errorMessageDecode || "{}");
+      try {
+        const text = await new Response(dataBuffer).text();
+        const decoded = JSON.parse(text || "{}");
+        if (decoded?.message) errorMessage = decoded.message;
+      } catch {
+        // ignore decode errors
+      }
     }
-    
-    const responseErrorModel: IReqErrorResponse & {
-      status?: number;
-      errors: any;
-    } = {
-      message: Array.isArray(errorMessage)
-        ? errorMessage.join(", ")
-        : errorMessage,
-      errors: error?.response?.data?.["errors" as never],
+
+    const responseErrorModel: IReqErrorResponse = {
+      message: errorMessage ?? undefined,
+      errors: error?.response?.data?.errors,
       status: error?.response?.status,
       error: true,
     };
+
     return responseErrorModel;
   }
 );
 
 export const AdapterHttp = {
-  request: async (url: string, method: string, data?: any, headers?: any) => {
-    const response = await api({
-      url,
-      method,
-      data,
-      headers,
-    });
+  request: async (
+    url: string,
+    method: string,
+    data?: unknown,
+    headers?: Record<string, string>
+  ) => {
+    const response = await api({ url, method, data, headers });
     return response;
   },
   clearToken: () => {
-    api.defaults.headers.common["Authorization"] = "";
+    delete api.defaults.headers.common["Authorization"];
   },
   setToken: (token: string) => {
     api.defaults.headers.common["Authorization"] = `token ${token}`;
